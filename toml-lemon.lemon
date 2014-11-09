@@ -1,0 +1,361 @@
+%token_destructor { TOML_freeToken($$); }
+%extra_argument { TOMLParserState *state }
+%parse_failure { _TOML_fillError( state->token, state, TOML_ERROR_FATAL ); }
+
+%include {
+#include <assert.h>
+#include <stdlib.h>
+#include "toml-parser.h"
+
+typedef struct table_id_node {
+  char *name;
+  struct table_id_node *first;
+  struct table_id_node *next;
+} table_id_node;
+
+char * _TOML_newstr( TOMLToken *token ) {
+  if ( token->tokenStr ) {
+    char *buffer = token->tokenStr;
+    token->tokenStr = NULL;
+    return buffer;
+  }
+
+  int size = token->end - token->start;
+  char *buffer = malloc( size + 1 );
+  strncpy( buffer, token->start, size );
+  buffer[ size ] = 0;
+  return buffer;
+}
+
+char * _TOML_getline( TOMLToken *token ) {
+  char *endOfLine = strchr( token->lineStart, '\n' );
+  if ( endOfLine == NULL ) {
+    endOfLine = strchr( token->lineStart, 0 );
+  }
+
+  int size = endOfLine - token->lineStart;
+  char *buffer = malloc( size + 1 );
+  strncpy( buffer, token->lineStart, size );
+  buffer[ size ] = 0;
+
+  return buffer;
+}
+
+void _TOML_fillError(
+  TOMLToken *token, TOMLParserState *state, int errorCode
+) {
+  state->errorCode = errorCode;
+
+  TOMLError *error = state->errorObj;
+  if ( error ) {
+    error->code = errorCode;
+    error->lineNo = token->line;
+    error->line = _TOML_getline( state->token );
+
+    int messageSize = strlen( TOMLErrorDescription[ errorCode ] );
+    error->message = malloc( messageSize + 1 );
+    strncpy( error->message, TOMLErrorDescription[ errorCode ], messageSize );
+    error->message[ messageSize ] = 0;
+
+    char *longMessage = malloc(
+      strlen( error->line ) +
+      strlen( error->message ) +
+      (int) ( error->lineNo / 10 ) +
+      20
+    );
+    sprintf(
+      longMessage,
+      "Error on line %d. %s: %s",
+      error->lineNo,
+      error->message,
+      error->line
+    );
+    error->fullDescription = longMessage;
+  }
+}
+
+void TOML_freeToken( TOMLToken *token ) {
+  free( token->tokenStr );
+  free( token );
+}
+}
+
+%name TOMLParser
+
+file ::= line EOF .
+line ::= line_and_comment .
+line ::= line line_and_comment .
+line_and_comment ::= line_content .
+line_and_comment ::= COMMENT .
+line_content ::= table_header .
+line_content ::= entry .
+
+table_header ::= LEFT_SQUARE table_header_2 RIGHT_SQUARE .
+
+table_header_2 ::= LEFT_SQUARE table_id(TABLE_ID) RIGHT_SQUARE . {
+  table_id_node *first = TABLE_ID->first;
+  table_id_node *node = first;
+  table_id_node *next = node->next;
+  TOMLTable *table = state->rootTable;
+
+  for ( ; node; node = next ) {
+    TOMLTable *tmpTable = TOMLTable_getKey( table, node->name );
+    TOMLBasic *tmpBasic = (TOMLBasic *) tmpTable;
+
+    if ( tmpTable && tmpBasic->type == TOML_ARRAY && node->next ) {
+      TOMLArray *tmpArray = (TOMLArray *) tmpBasic;
+      tmpTable = TOMLArray_getIndex( tmpArray, tmpArray->size - 1 );
+    }
+
+    if ( !tmpTable ) {
+      TOMLRef nextValue;
+      if ( node->next ) {
+        nextValue = TOML_allocTable( NULL, NULL );
+      } else {
+        nextValue = TOML_allocArray( TOML_TABLE, NULL );
+      }
+      TOMLTable_setKey( table, node->name, nextValue );
+      tmpTable = nextValue;
+    }
+    table = tmpTable;
+    next = node->next;
+    free( node->name );
+    free( node );
+  }
+
+  TOMLArray *array = (TOMLArray *) table;
+  table = TOML_allocTable( NULL, NULL );
+  TOMLArray_append( array, table );
+
+  state->currentTable = table;
+}
+table_header_2 ::= table_id(TABLE_ID) . {
+  table_id_node *first = TABLE_ID->first;
+  table_id_node *node = first;
+  table_id_node *next = node->next;
+  TOMLTable *table = state->rootTable;
+
+  for ( ; node; node = next ) {
+    TOMLTable *tmpTable = TOMLTable_getKey( table, node->name );
+    TOMLBasic *tmpBasic = (TOMLBasic *) tmpTable;
+
+    if ( tmpTable && tmpBasic->type == TOML_ARRAY ) {
+      TOMLArray *tmpArray = (TOMLArray *) tmpBasic;
+      tmpTable = TOMLArray_getIndex( tmpArray, tmpArray->size - 1 );
+    }
+
+    if ( tmpTable && node->next == NULL ) {
+      _TOML_fillError( state->token, state, TOML_ERROR_TABLE_DEFINED );
+    } else if ( !tmpTable ) {
+      tmpTable = TOML_allocTable( NULL, NULL );
+      TOMLTable_setKey( table, node->name, tmpTable );
+    }
+    table = tmpTable;
+    next = node->next;
+    free( node->name );
+    free( node );
+  }
+
+  state->currentTable = table;
+}
+
+%type table_id { table_id_node * }
+table_id(TABLE_ID) ::= table_id(LAST_ID) ID_DOT id(ID) . {
+  table_id_node *node = malloc( sizeof(table_id_node) );
+  node->name = ID;
+  node->first = LAST_ID->first;
+  node->next = NULL;
+  LAST_ID->next = node;
+  TABLE_ID = node;
+}
+table_id(TABLE_ID) ::= id(ID) . {
+  table_id_node *node = malloc( sizeof(table_id_node) );
+  node->name = ID;
+  node->first = node;
+  node->next = NULL;
+  TABLE_ID = node;
+}
+
+entry ::= id(ID) EQ value(VALUE) . {
+  if ( ID != NULL || VALUE != NULL ) {
+    TOMLRef oldValue = TOMLTable_getKey( state->currentTable, ID );
+    if ( oldValue != NULL ) {
+      _TOML_fillError( state->token, state, TOML_ERROR_ENTRY_DEFINED );
+    } else {
+      TOMLTable_setKey( state->currentTable, ID, VALUE );
+    }
+  }
+  free( ID );
+}
+
+id(ID) ::= ID(TOKEN) . {
+  ID = _TOML_newstr( TOKEN );
+}
+
+%type value { TOMLBasic * }
+value(VALUE) ::= array(ARRAY) . { VALUE = (TOMLBasic *) ARRAY; }
+value(VALUE) ::= string(STRING) . { VALUE = (TOMLBasic *) STRING; }
+value(VALUE) ::= number(NUMBER) . { VALUE = (TOMLBasic *) NUMBER; }
+value(VALUE) ::= boolean(BOOLEAN) . { VALUE = (TOMLBasic *) BOOLEAN; }
+value(VALUE) ::= date(DATE) . { VALUE = (TOMLBasic *) DATE; }
+
+array(ARY) ::= LEFT_SQUARE members(OLD_ARY) RIGHT_SQUARE . {
+  ARY = OLD_ARY;
+}
+members(ARY) ::= value_members(OLD_ARY) . { ARY = OLD_ARY; }
+members(ARY) ::= . { ARY = TOML_allocArray( TOML_NOTYPE, NULL ); }
+
+%type value_members { TOMLArray * }
+value_members(NEW_ARY) ::= value_members(OLD_ARY) comma value(VALUE) . {
+  if ( OLD_ARY->memberType != VALUE->type ) {
+    _TOML_fillError( state->token, state, TOML_ERROR_ARRAY_MEMBER_MISMATCH );
+  }
+  NEW_ARY = OLD_ARY;
+  TOMLArray_append( NEW_ARY, VALUE );
+}
+value_members(NEW_ARY) ::= value_members(OLD_ARY) comma . {
+  NEW_ARY = OLD_ARY;
+}
+value_members(ARY) ::= value(VALUE) . {
+  ARY = TOML_allocArray( VALUE->type, VALUE, NULL );
+}
+
+comma ::= COMMA .
+
+string(STR) ::= STRING(STR_TOKEN) . {
+  TOMLToken *token = STR_TOKEN;
+  int size = token->end - token->start;
+
+  char *tmp = _TOML_newstr( token );
+
+  char *dest = malloc( size + 1 );
+  strncpy( dest, tmp, size );
+  dest[ size ] = 0;
+
+  char *tmpCursor = tmp;
+  char *destCursor = dest;
+
+  // replace \\b with \b (U+0008)
+  // replace \\t with \t (U+0009)
+  // replace \\n with \n (U+000A)
+  // replace \\f with \f (U+000C)
+  // replace \\r with \r (U+000D)
+  // replace \\\" with " (U+0022)
+  // replace \/ with / (U+002F)
+  // replace \\ with \ (U+005C)
+  // replace \\uxxxx with encoded character
+  while ( tmpCursor != NULL ) {
+    char *next = strchr( tmpCursor, '\\' );
+    if ( next && next[1] ) {
+      char *nextDest = destCursor + ( (int) next - (int) tmpCursor );
+      #define REPLACE( match, value ) \
+      if ( next[1] == match ) { \
+        *nextDest = value; \
+      }
+      REPLACE( 'b', '\b' )
+      else REPLACE( 't', '\t' )
+      else REPLACE( 'f', '\f' )
+      else REPLACE( 'n', '\n' )
+      else REPLACE( 'r', '\r' )
+      else REPLACE( '"', '"' )
+      else REPLACE( '/', '/' )
+      else REPLACE( '\\', '\\' )
+      #undef REPLACE
+      else if ( next[1] == 'u' ) {
+        int num = 0;
+        sscanf( next + 2, "%04x", &num );
+        int chsize = 0;
+
+        // Number is in normal ascii range.
+        if ( num < 0x80 ) {
+          nextDest[0] = num; // Up to 0x7f
+          chsize = 1;
+        // Split the value into 2 or 3 chars as utf8.
+        } else if ( num < 0x800 ) {
+          nextDest[0] = 0xc0 | ( ( num >> 6 ) & 0x1f );
+          nextDest[1] = 0x80 | ( num & 0x3f );
+          chsize = 2;
+        } else {
+          nextDest[0] = 0xe0 | ( ( num >> 12 ) & 0x0f );
+          nextDest[1] = 0x80 | ( ( num >> 6 ) & 0x3f );
+          nextDest[2] = 0x80 | ( num & 0x3f );
+          chsize = 3;
+        }
+
+        next += 4;
+        nextDest += chsize - 1;
+        size -= 5 - chsize;
+      }
+
+      size--;
+      strcpy( nextDest + 1, next + 2 );
+      tmpCursor = next + 2;
+      destCursor = nextDest + 1;
+    } else {
+      tmpCursor = next;
+    }
+  }
+
+  STR = TOML_allocStringN( dest + 1, size - 2 );
+
+  free( dest );
+  free( tmp );
+}
+
+%type number { TOMLNumber * }
+number(NUMBER) ::= NUMBER(NUMBER_TOKEN) . {
+  char *tmp = _TOML_newstr( NUMBER_TOKEN );
+
+  if ( strchr( tmp, '.' ) != NULL ) {
+    NUMBER = TOML_allocDouble( atof( tmp ) );
+  } else {
+    NUMBER = TOML_allocInt( atoi( tmp ) );
+  }
+
+  free( tmp );
+}
+
+%type boolean { TOMLBoolean * }
+boolean(BOOLEAN) ::= TRUE . {
+  BOOLEAN = TOML_allocBoolean( 1 );
+}
+
+boolean(BOOLEAN) ::= FALSE . {
+  BOOLEAN = TOML_allocBoolean( 0 );
+}
+
+%type date { TOMLDate * }
+date(DATE) ::= DATE(DATE_TOKEN) . {
+  int year;
+  int month;
+  int day;
+  int hour;
+  int minute;
+  int second;
+  sscanf(
+    ((TOMLToken *) DATE_TOKEN)->tokenStr,
+    "%d-%d-%dT%d:%d:%dZ",
+    &year, &month, &day, &hour, &minute, &second
+  );
+  DATE = TOML_allocDate( year, month, day, hour, minute, second );
+}
+
+/**
+ ** Errors.
+ **/
+
+error(A) ::= EOF error(B) . { A = B; }
+
+table_header ::= LEFT_SQUARE(SQUARE) error . {
+  _TOML_fillError( SQUARE, state, TOML_ERROR_INVALID_HEADER );
+}
+
+entry ::= id(ID) EQ error . {
+  _TOML_fillError( state->token, state, TOML_ERROR_NO_VALUE );
+  free( ID );
+}
+
+entry ::= id(ID) error . {
+  _TOML_fillError( state->token, state, TOML_ERROR_NO_EQ );
+  free( ID );
+}
