@@ -52,9 +52,9 @@ void _TOML_fillError(
     error->lineNo = token->line;
     error->line = _TOML_getline( state->token );
 
-    int messageSize = strlen( TOMLErrorDescription[ errorCode ] );
+    int messageSize = strlen( TOMLGetError(errorCode) );
     error->message = malloc( messageSize + 1 );
-    strncpy( error->message, TOMLErrorDescription[ errorCode ], messageSize );
+    strncpy( error->message, TOMLGetError(errorCode), messageSize );
     error->message[ messageSize ] = 0;
 
     char *longMessage = malloc(

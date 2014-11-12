@@ -85,10 +85,10 @@ void TOML_freeToken( TOMLToken *token ) {
 /* Next is all token values, in a form suitable for use by makeheaders.
 ** This section will be null unless lemon is run with the -m switch.
 */
-/*
+/* 
 ** These constants (all generated automatically by the parser generator)
 ** specify the various kinds of tokens (terminals) that the parser
-** understands.
+** understands. 
 **
 ** Each symbol here is a terminal symbol in the grammar.
 */
@@ -105,7 +105,7 @@ void TOML_freeToken( TOMLToken *token ) {
 **                       and nonterminals.  "int" is used otherwise.
 **    YYNOCODE           is a number of type YYCODETYPE which corresponds
 **                       to no legal terminal or nonterminal number.  This
-**                       number is used to fill in empty slots of the hash
+**                       number is used to fill in empty slots of the hash 
 **                       table.
 **    YYFALLBACK         If defined, this indicates that one or more tokens
 **                       have fall-back values which should be used if the
@@ -114,7 +114,7 @@ void TOML_freeToken( TOMLToken *token ) {
 **                       and nonterminal numbers.  "unsigned char" is
 **                       used if there are fewer than 250 rules and
 **                       states combined.  "int" is used otherwise.
-**    TOMLParserTOKENTYPE     is the data type used for minor tokens given
+**    TOMLParserTOKENTYPE     is the data type used for minor tokens given 
 **                       directly to the parser from the tokenizer.
 **    YYMINORTYPE        is the data type used for all minor tokens.
 **                       This is typically a union of many types, one of
@@ -150,9 +150,9 @@ typedef union {
 #define YYSTACKDEPTH 100
 #endif
 #define TOMLParserARG_SDECL  TOMLParserState *state ;
-#define TOMLParserARG_PDECL , TOMLParserState *state
-#define TOMLParserARG_FETCH  TOMLParserState *state  = yypParser->state
-#define TOMLParserARG_STORE yypParser->state  = state
+#define TOMLParserARG_PDECL , TOMLParserState *state 
+#define TOMLParserARG_FETCH  TOMLParserState *state  = yypParser->state 
+#define TOMLParserARG_STORE yypParser->state  = state 
 #define YYNSTATE 46
 #define YYNRULE 35
 #define YYERRORSYMBOL 14
@@ -181,7 +181,7 @@ static const YYMINORTYPE yyzerominor = { 0 };
 /* Next are the tables used to determine what action to take based on the
 ** current state and lookahead token.  These tables are used to implement
 ** functions that take a state number and lookahead value and return an
-** action integer.
+** action integer.  
 **
 ** Suppose the action integer is N.  Then the action is determined as
 ** follows
@@ -206,7 +206,7 @@ static const YYMINORTYPE yyzerominor = { 0 };
 ** If the index value yy_shift_ofst[S]+X is out of range or if the value
 ** yy_lookahead[yy_shift_ofst[S]+X] is not equal to X or if yy_shift_ofst[S]
 ** is equal to YY_SHIFT_USE_DFLT, it means that the action is not in the table
-** and that yy_default[S] should be used instead.
+** and that yy_default[S] should be used instead.  
 **
 ** The formula above is for computing the action when the lookahead is
 ** a terminal symbol.  If the lookahead is a non-terminal (as occurs after
@@ -268,7 +268,7 @@ static const YYACTIONTYPE yy_default[] = {
 
 /* The next table maps tokens into fallback tokens.  If a construct
 ** like the following:
-**
+** 
 **      %fallback ID X Y Z.
 **
 ** appears in the grammar, then ID becomes a fallback token for X, Y,
@@ -327,10 +327,10 @@ static char *yyTracePrompt = 0;
 #endif /* NDEBUG */
 
 #ifndef NDEBUG
-/*
+/* 
 ** Turn parser tracing on by giving a stream to which to write the trace
 ** and a prompt to preface each trace message.  Tracing is turned off
-** by making either argument NULL
+** by making either argument NULL 
 **
 ** Inputs:
 ** <ul>
@@ -355,16 +355,16 @@ void TOMLParserTrace(FILE *TraceFILE, char *zTracePrompt){
 #ifndef NDEBUG
 /* For tracing shifts, the names of all terminals and nonterminals
 ** are required.  The following table supplies these names */
-static const char *const yyTokenName[] = {
-  "$",             "EOF",           "COMMENT",       "LEFT_SQUARE",
-  "RIGHT_SQUARE",  "ID_DOT",        "EQ",            "ID",
-  "COMMA",         "STRING",        "NUMBER",        "TRUE",
-  "FALSE",         "DATE",          "error",         "file",
+static const char *const yyTokenName[] = { 
+  "$",             "EOF",           "COMMENT",       "LEFT_SQUARE", 
+  "RIGHT_SQUARE",  "ID_DOT",        "EQ",            "ID",          
+  "COMMA",         "STRING",        "NUMBER",        "TRUE",        
+  "FALSE",         "DATE",          "error",         "file",        
   "line",          "line_and_comment",  "line_content",  "table_header",
-  "entry",         "table_header_2",  "table_id",      "id",
-  "value",         "array",         "string",        "number",
+  "entry",         "table_header_2",  "table_id",      "id",          
+  "value",         "array",         "string",        "number",      
   "boolean",       "date",          "members",       "value_members",
-  "comma",
+  "comma",       
 };
 #endif /* NDEBUG */
 
@@ -434,7 +434,7 @@ static void yyGrowStack(yyParser *p){
 }
 #endif
 
-/*
+/* 
 ** This function allocates a new parser.
 ** The only argument is a pointer to a function which works like
 ** malloc.
@@ -478,7 +478,7 @@ static void yy_destructor(
     /* Here is inserted the actions which take place when a
     ** terminal or non-terminal is destroyed.  This can happen
     ** when the symbol is popped from the stack during a
-    ** reduce or during error processing or when a parser is
+    ** reduce or during error processing or when a parser is 
     ** being destroyed before it is finished parsing.
     **
     ** Note: during a reduce, the only symbols destroyed are those
@@ -501,7 +501,7 @@ static void yy_destructor(
     case 13: /* DATE */
 {
 #line 1 "toml-lemon.lemon"
- TOML_freeToken((yypminor->yy0));
+ TOML_freeToken((yypminor->yy0)); 
 #line 506 "toml-lemon.c"
 }
       break;
@@ -535,7 +535,7 @@ static int yy_pop_parser_stack(yyParser *pParser){
   return yymajor;
 }
 
-/*
+/* 
 ** Deallocate and destroy a parser.  Destructors are all called for
 ** all stack elements before shutting the parser down.
 **
@@ -584,7 +584,7 @@ static int yy_find_shift_action(
 ){
   int i;
   int stateno = pParser->yystack[pParser->yyidx].stateno;
-
+ 
   if( stateno>YY_SHIFT_MAX || (i = yy_shift_ofst[stateno])==YY_SHIFT_USE_DFLT ){
     return yy_default[stateno];
   }
@@ -694,7 +694,7 @@ static void yy_shift(
     yypParser->yyidxMax = yypParser->yyidx;
   }
 #endif
-#if YYSTACKDEPTH>0
+#if YYSTACKDEPTH>0 
   if( yypParser->yyidx>=YYSTACKDEPTH ){
     yyStackOverflow(yypParser, yypMinor);
     return;
@@ -786,7 +786,7 @@ static void yy_reduce(
   TOMLParserARG_FETCH;
   yymsp = &yypParser->yystack[yypParser->yyidx];
 #ifndef NDEBUG
-  if( yyTraceFILE && yyruleno>=0
+  if( yyTraceFILE && yyruleno>=0 
         && yyruleno<(int)(sizeof(yyRuleName)/sizeof(yyRuleName[0])) ){
     fprintf(yyTraceFILE, "%sReduce [%s].\n", yyTracePrompt,
       yyRuleName[yyruleno]);
@@ -799,7 +799,7 @@ static void yy_reduce(
   ** not set the value of its left-hand side nonterminal.  Leaving the
   ** value of the nonterminal uninitialized is utterly harmless as long
   ** as the value is never used.  So really the only thing this code
-  ** accomplishes is to quieten purify.
+  ** accomplishes is to quieten purify.  
   **
   ** 2007-01-16:  The wireshark project (www.wireshark.org) reports that
   ** without this code, their parser segfaults.  I'm not sure what there
@@ -1251,7 +1251,7 @@ static void yy_parse_failed(
   /* Here code is inserted which will be executed whenever the
   ** parser fails */
 #line 3 "toml-lemon.lemon"
- _TOML_fillError( state->token, state, TOML_ERROR_FATAL );
+ _TOML_fillError( state->token, state, TOML_ERROR_FATAL ); 
 #line 1256 "toml-lemon.c"
   TOMLParserARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
@@ -1369,7 +1369,7 @@ void TOMLParser(
 #ifdef YYERRORSYMBOL
       /* A syntax error has occurred.
       ** The response to an error depends upon whether or not the
-      ** grammar defines an error token "ERROR".
+      ** grammar defines an error token "ERROR".  
       **
       ** This is what we do if the grammar does define ERROR:
       **
@@ -1432,7 +1432,7 @@ void TOMLParser(
       yy_syntax_error(yypParser,yymajor,yyminorunion);
       yy_destructor(yypParser,(YYCODETYPE)yymajor,&yyminorunion);
       yymajor = YYNOCODE;
-
+      
 #else  /* YYERRORSYMBOL is not defined */
       /* This is what we do if the grammar does not define ERROR:
       **
