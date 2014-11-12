@@ -1,17 +1,4 @@
-#include <assert.h>
-#include <math.h>
-#include <stdarg.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-
-// #include <antlr3.h>
-
-#include "toml.h"
-#include "toml-parser.h"
-// #include "tomlParser.h"
-// #include "tomlLexer.h"
 
 static char *TOMLErrorStrings[] = {
   "TOML_SUCCESS",

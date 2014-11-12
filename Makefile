@@ -10,13 +10,13 @@ rel:
 dbg:
 	mkdir -p dbg
 
-toml-lemon.c: toml-lemon.lemon
+src/toml-lemon.c: src/toml-lemon.lemon
 	lemon $<
 
-toml-re2c.c: toml-re2c.re2c
+src/toml-re2c.c: src/toml-re2c.re2c
 	re2c --no-generation-date $< >$@
 
-toml-all.c: common.h toml-lemon.h toml-parser.h toml-re2c.c toml-lemon.c toml.c
+toml-all.c: src/common.h src/toml-lemon.h src/toml-parser.h src/toml-re2c.c src/toml-lemon.c src/toml.c
 	cat $^ >$@
 
 rel/toml: rel toml-all.c main.c

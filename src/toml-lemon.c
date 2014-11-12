@@ -4,7 +4,7 @@
 /* First off, code is included that follows the "include" declaration
 ** in the input grammar file. */
 #include <stdio.h>
-#line 5 "toml-lemon.lemon"
+#line 5 "src/toml-lemon.lemon"
 
 
 typedef struct table_id_node {
@@ -78,7 +78,7 @@ void TOML_freeToken( TOMLToken *token ) {
   free( token->tokenStr );
   free( token );
 }
-#line 82 "toml-lemon.c"
+#line 82 "src/toml-lemon.c"
 /* Next is all token values, in a form suitable for use by makeheaders.
 ** This section will be null unless lemon is run with the -m switch.
 */
@@ -497,9 +497,9 @@ static void yy_destructor(
     case 12: /* FALSE */
     case 13: /* DATE */
 {
-#line 1 "toml-lemon.lemon"
+#line 1 "src/toml-lemon.lemon"
  TOML_freeToken((yypminor->yy0)); 
-#line 503 "toml-lemon.c"
+#line 503 "src/toml-lemon.c"
 }
       break;
     default:  break;   /* If no destructor action specified: do nothing */
@@ -818,29 +818,29 @@ static void yy_reduce(
   **     break;
   */
       case 0: /* file ::= line EOF */
-#line 82 "toml-lemon.lemon"
+#line 82 "src/toml-lemon.lemon"
 {
   yy_destructor(yypParser,1,&yymsp[0].minor);
 }
-#line 826 "toml-lemon.c"
+#line 826 "src/toml-lemon.c"
         break;
       case 4: /* line_and_comment ::= COMMENT */
-#line 86 "toml-lemon.lemon"
+#line 86 "src/toml-lemon.lemon"
 {
   yy_destructor(yypParser,2,&yymsp[0].minor);
 }
-#line 833 "toml-lemon.c"
+#line 833 "src/toml-lemon.c"
         break;
       case 7: /* table_header ::= LEFT_SQUARE table_header_2 RIGHT_SQUARE */
-#line 90 "toml-lemon.lemon"
+#line 90 "src/toml-lemon.lemon"
 {
   yy_destructor(yypParser,3,&yymsp[-2].minor);
   yy_destructor(yypParser,4,&yymsp[0].minor);
 }
-#line 841 "toml-lemon.c"
+#line 841 "src/toml-lemon.c"
         break;
       case 8: /* table_header_2 ::= LEFT_SQUARE table_id RIGHT_SQUARE */
-#line 92 "toml-lemon.lemon"
+#line 92 "src/toml-lemon.lemon"
 {
   table_id_node *first = yymsp[-1].minor.yy62->first;
   table_id_node *node = first;
@@ -880,10 +880,10 @@ static void yy_reduce(
   yy_destructor(yypParser,3,&yymsp[-2].minor);
   yy_destructor(yypParser,4,&yymsp[0].minor);
 }
-#line 884 "toml-lemon.c"
+#line 884 "src/toml-lemon.c"
         break;
       case 9: /* table_header_2 ::= table_id */
-#line 129 "toml-lemon.lemon"
+#line 129 "src/toml-lemon.lemon"
 {
   table_id_node *first = yymsp[0].minor.yy62->first;
   table_id_node *node = first;
@@ -913,10 +913,10 @@ static void yy_reduce(
 
   state->currentTable = table;
 }
-#line 917 "toml-lemon.c"
+#line 917 "src/toml-lemon.c"
         break;
       case 10: /* table_id ::= table_id ID_DOT id */
-#line 160 "toml-lemon.lemon"
+#line 160 "src/toml-lemon.lemon"
 {
   table_id_node *node = malloc( sizeof(table_id_node) );
   node->name = yymsp[0].minor.yy0;
@@ -926,10 +926,10 @@ static void yy_reduce(
   yygotominor.yy62 = node;
   yy_destructor(yypParser,5,&yymsp[-1].minor);
 }
-#line 930 "toml-lemon.c"
+#line 930 "src/toml-lemon.c"
         break;
       case 11: /* table_id ::= id */
-#line 168 "toml-lemon.lemon"
+#line 168 "src/toml-lemon.lemon"
 {
   table_id_node *node = malloc( sizeof(table_id_node) );
   node->name = yymsp[0].minor.yy0;
@@ -937,10 +937,10 @@ static void yy_reduce(
   node->next = NULL;
   yygotominor.yy62 = node;
 }
-#line 941 "toml-lemon.c"
+#line 941 "src/toml-lemon.c"
         break;
       case 12: /* entry ::= id EQ value */
-#line 176 "toml-lemon.lemon"
+#line 176 "src/toml-lemon.lemon"
 {
   if ( yymsp[-2].minor.yy0 != NULL || yymsp[0].minor.yy13 != NULL ) {
     TOMLRef oldValue = TOMLTable_getKey( state->currentTable, yymsp[-2].minor.yy0 );
@@ -953,57 +953,57 @@ static void yy_reduce(
   free( yymsp[-2].minor.yy0 );
   yy_destructor(yypParser,6,&yymsp[-1].minor);
 }
-#line 957 "toml-lemon.c"
+#line 957 "src/toml-lemon.c"
         break;
       case 13: /* id ::= ID */
-#line 188 "toml-lemon.lemon"
+#line 188 "src/toml-lemon.lemon"
 {
   yygotominor.yy0 = _TOML_newstr( yymsp[0].minor.yy0 );
 }
-#line 964 "toml-lemon.c"
+#line 964 "src/toml-lemon.c"
         break;
       case 14: /* value ::= array */
       case 15: /* value ::= string */ yytestcase(yyruleno==15);
-#line 193 "toml-lemon.lemon"
+#line 193 "src/toml-lemon.lemon"
 { yygotominor.yy13 = (TOMLBasic *) yymsp[0].minor.yy0; }
-#line 970 "toml-lemon.c"
+#line 970 "src/toml-lemon.c"
         break;
       case 16: /* value ::= number */
-#line 195 "toml-lemon.lemon"
+#line 195 "src/toml-lemon.lemon"
 { yygotominor.yy13 = (TOMLBasic *) yymsp[0].minor.yy8; }
-#line 975 "toml-lemon.c"
+#line 975 "src/toml-lemon.c"
         break;
       case 17: /* value ::= boolean */
-#line 196 "toml-lemon.lemon"
+#line 196 "src/toml-lemon.lemon"
 { yygotominor.yy13 = (TOMLBasic *) yymsp[0].minor.yy3; }
-#line 980 "toml-lemon.c"
+#line 980 "src/toml-lemon.c"
         break;
       case 18: /* value ::= date */
-#line 197 "toml-lemon.lemon"
+#line 197 "src/toml-lemon.lemon"
 { yygotominor.yy13 = (TOMLBasic *) yymsp[0].minor.yy4; }
-#line 985 "toml-lemon.c"
+#line 985 "src/toml-lemon.c"
         break;
       case 19: /* array ::= LEFT_SQUARE members RIGHT_SQUARE */
-#line 199 "toml-lemon.lemon"
+#line 199 "src/toml-lemon.lemon"
 {
   yygotominor.yy0 = yymsp[-1].minor.yy0;
   yy_destructor(yypParser,3,&yymsp[-2].minor);
   yy_destructor(yypParser,4,&yymsp[0].minor);
 }
-#line 994 "toml-lemon.c"
+#line 994 "src/toml-lemon.c"
         break;
       case 20: /* members ::= value_members */
-#line 202 "toml-lemon.lemon"
+#line 202 "src/toml-lemon.lemon"
 { yygotominor.yy0 = yymsp[0].minor.yy50; }
-#line 999 "toml-lemon.c"
+#line 999 "src/toml-lemon.c"
         break;
       case 21: /* members ::= */
-#line 203 "toml-lemon.lemon"
+#line 203 "src/toml-lemon.lemon"
 { yygotominor.yy0 = TOML_allocArray( TOML_NOTYPE, NULL ); }
-#line 1004 "toml-lemon.c"
+#line 1004 "src/toml-lemon.c"
         break;
       case 22: /* value_members ::= value_members comma value */
-#line 206 "toml-lemon.lemon"
+#line 206 "src/toml-lemon.lemon"
 {
   if ( yymsp[-2].minor.yy50->memberType != yymsp[0].minor.yy13->type ) {
     _TOML_fillError( state->token, state, TOML_ERROR_ARRAY_MEMBER_MISMATCH );
@@ -1011,31 +1011,31 @@ static void yy_reduce(
   yygotominor.yy50 = yymsp[-2].minor.yy50;
   TOMLArray_append( yygotominor.yy50, yymsp[0].minor.yy13 );
 }
-#line 1015 "toml-lemon.c"
+#line 1015 "src/toml-lemon.c"
         break;
       case 23: /* value_members ::= value_members comma */
-#line 213 "toml-lemon.lemon"
+#line 213 "src/toml-lemon.lemon"
 {
   yygotominor.yy50 = yymsp[-1].minor.yy50;
 }
-#line 1022 "toml-lemon.c"
+#line 1022 "src/toml-lemon.c"
         break;
       case 24: /* value_members ::= value */
-#line 216 "toml-lemon.lemon"
+#line 216 "src/toml-lemon.lemon"
 {
   yygotominor.yy50 = TOML_allocArray( yymsp[0].minor.yy13->type, yymsp[0].minor.yy13, NULL );
 }
-#line 1029 "toml-lemon.c"
+#line 1029 "src/toml-lemon.c"
         break;
       case 25: /* comma ::= COMMA */
-#line 220 "toml-lemon.lemon"
+#line 220 "src/toml-lemon.lemon"
 {
   yy_destructor(yypParser,8,&yymsp[0].minor);
 }
-#line 1036 "toml-lemon.c"
+#line 1036 "src/toml-lemon.c"
         break;
       case 26: /* string ::= STRING */
-#line 222 "toml-lemon.lemon"
+#line 222 "src/toml-lemon.lemon"
 {
   TOMLToken *token = yymsp[0].minor.yy0;
   int size = token->end - token->start;
@@ -1115,10 +1115,10 @@ static void yy_reduce(
   free( dest );
   free( tmp );
 }
-#line 1119 "toml-lemon.c"
+#line 1119 "src/toml-lemon.c"
         break;
       case 27: /* number ::= NUMBER */
-#line 303 "toml-lemon.lemon"
+#line 303 "src/toml-lemon.lemon"
 {
   char *tmp = _TOML_newstr( yymsp[0].minor.yy0 );
 
@@ -1130,26 +1130,26 @@ static void yy_reduce(
 
   free( tmp );
 }
-#line 1134 "toml-lemon.c"
+#line 1134 "src/toml-lemon.c"
         break;
       case 28: /* boolean ::= TRUE */
-#line 316 "toml-lemon.lemon"
+#line 316 "src/toml-lemon.lemon"
 {
   yygotominor.yy3 = TOML_allocBoolean( 1 );
   yy_destructor(yypParser,11,&yymsp[0].minor);
 }
-#line 1142 "toml-lemon.c"
+#line 1142 "src/toml-lemon.c"
         break;
       case 29: /* boolean ::= FALSE */
-#line 320 "toml-lemon.lemon"
+#line 320 "src/toml-lemon.lemon"
 {
   yygotominor.yy3 = TOML_allocBoolean( 0 );
   yy_destructor(yypParser,12,&yymsp[0].minor);
 }
-#line 1150 "toml-lemon.c"
+#line 1150 "src/toml-lemon.c"
         break;
       case 30: /* date ::= DATE */
-#line 325 "toml-lemon.lemon"
+#line 325 "src/toml-lemon.lemon"
 {
   int year;
   int month;
@@ -1164,37 +1164,37 @@ static void yy_reduce(
   );
   yygotominor.yy4 = TOML_allocDate( year, month, day, hour, minute, second );
 }
-#line 1168 "toml-lemon.c"
+#line 1168 "src/toml-lemon.c"
         break;
       case 31: /* error ::= EOF error */
-#line 344 "toml-lemon.lemon"
+#line 344 "src/toml-lemon.lemon"
 { yygotominor.yy67 = yymsp[0].minor.yy67;   yy_destructor(yypParser,1,&yymsp[-1].minor);
 }
-#line 1174 "toml-lemon.c"
+#line 1174 "src/toml-lemon.c"
         break;
       case 32: /* table_header ::= LEFT_SQUARE error */
-#line 346 "toml-lemon.lemon"
+#line 346 "src/toml-lemon.lemon"
 {
   _TOML_fillError( yymsp[-1].minor.yy0, state, TOML_ERROR_INVALID_HEADER );
 }
-#line 1181 "toml-lemon.c"
+#line 1181 "src/toml-lemon.c"
         break;
       case 33: /* entry ::= id EQ error */
-#line 350 "toml-lemon.lemon"
+#line 350 "src/toml-lemon.lemon"
 {
   _TOML_fillError( state->token, state, TOML_ERROR_NO_VALUE );
   free( yymsp[-2].minor.yy0 );
   yy_destructor(yypParser,6,&yymsp[-1].minor);
 }
-#line 1190 "toml-lemon.c"
+#line 1190 "src/toml-lemon.c"
         break;
       case 34: /* entry ::= id error */
-#line 355 "toml-lemon.lemon"
+#line 355 "src/toml-lemon.lemon"
 {
   _TOML_fillError( state->token, state, TOML_ERROR_NO_EQ );
   free( yymsp[-1].minor.yy0 );
 }
-#line 1198 "toml-lemon.c"
+#line 1198 "src/toml-lemon.c"
         break;
       default:
       /* (1) line ::= line_and_comment */ yytestcase(yyruleno==1);
@@ -1247,9 +1247,9 @@ static void yy_parse_failed(
   while( yypParser->yyidx>=0 ) yy_pop_parser_stack(yypParser);
   /* Here code is inserted which will be executed whenever the
   ** parser fails */
-#line 3 "toml-lemon.lemon"
+#line 3 "src/toml-lemon.lemon"
  _TOML_fillError( state->token, state, TOML_ERROR_FATAL ); 
-#line 1253 "toml-lemon.c"
+#line 1253 "src/toml-lemon.c"
   TOMLParserARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
 #endif /* YYNOERRORRECOVERY */
