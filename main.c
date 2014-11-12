@@ -146,7 +146,6 @@ int main( int argc, char **argv ) {
 
   // Parse path argument.
   TOMLRef ref = table;
-  TOMLBasic *basic = ref;
   {
     int tokenSize = 0;
     char *token = NULL;
@@ -166,7 +165,7 @@ int main( int argc, char **argv ) {
         strncpy( token, tokenStart, tokenEnd - tokenStart );
         token[ tokenEnd - tokenStart ] = 0;
 
-        basic = ref = TOML_find( ref, token, NULL );
+        ref = TOML_find( ref, token, NULL );
 
         tokenEnd++;
         if ( *tokenEnd == '.' || *tokenEnd == '[' ) {
@@ -177,7 +176,7 @@ int main( int argc, char **argv ) {
           tokenEnd = NULL;
         }
       } else {
-        basic = ref = TOML_find( ref, tokenStart, NULL );
+          ref = TOML_find( ref, tokenStart, NULL );
       }
     }
   }
