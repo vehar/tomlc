@@ -1,6 +1,3 @@
-#include "toml-lemon.h"
-#include "toml-parser.h"
-
 #define COUNTLINES \
   tokenData->end = p; \
   char *line = tokenData->start; \

@@ -3,9 +3,6 @@
 %parse_failure { _TOML_fillError( state->token, state, TOML_ERROR_FATAL ); }
 
 %include {
-#include <assert.h>
-#include <stdlib.h>
-#include "toml-parser.h"
 
 typedef struct table_id_node {
   char *name;

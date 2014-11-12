@@ -5,7 +5,7 @@
 #include "toml.h"
 
 int main() {
-  ansicolor( getenv( "ANSICOLOR" ) != NULL );
+  //ansicolor( getenv( "ANSICOLOR" ) != NULL );
   plan( 75 );
 
   note( "\n** memory management **" );
