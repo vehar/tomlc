@@ -31,9 +31,9 @@ dbg/toml-test: dbg toml-all.c test.c tap/tap.c
 test: dbg/toml-test
 	./dbg/toml-test
 
-.PHONY: clanganalyze
+.PHONY: analyze
 
-clanganalyze: clean
+analyze: clean
 	~/Downloads/checker-276/scan-build make rel/toml
 
 .PHONY: clean

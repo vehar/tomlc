@@ -92,7 +92,7 @@ table_header ::= LEFT_SQUARE table_header_2 RIGHT_SQUARE .
 table_header_2 ::= LEFT_SQUARE table_id(TABLE_ID) RIGHT_SQUARE . {
   table_id_node *first = TABLE_ID->first;
   table_id_node *node = first;
-  table_id_node *next = node->next;
+  table_id_node *next = NULL;
   TOMLTable *table = state->rootTable;
 
   for ( ; node; node = next ) {
@@ -129,7 +129,7 @@ table_header_2 ::= LEFT_SQUARE table_id(TABLE_ID) RIGHT_SQUARE . {
 table_header_2 ::= table_id(TABLE_ID) . {
   table_id_node *first = TABLE_ID->first;
   table_id_node *node = first;
-  table_id_node *next = node->next;
+  table_id_node *next = NULL;
   TOMLTable *table = state->rootTable;
 
   for ( ; node; node = next ) {

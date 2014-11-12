@@ -844,7 +844,7 @@ static void yy_reduce(
 {
   table_id_node *first = yymsp[-1].minor.yy62->first;
   table_id_node *node = first;
-  table_id_node *next = node->next;
+  table_id_node *next = NULL;
   TOMLTable *table = state->rootTable;
 
   for ( ; node; node = next ) {
@@ -887,7 +887,7 @@ static void yy_reduce(
 {
   table_id_node *first = yymsp[0].minor.yy62->first;
   table_id_node *node = first;
-  table_id_node *next = node->next;
+  table_id_node *next = NULL;
   TOMLTable *table = state->rootTable;
 
   for ( ; node; node = next ) {
