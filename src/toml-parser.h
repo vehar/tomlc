@@ -5,6 +5,12 @@
 extern "C" {
 #endif
 
+#include <string.h>
+#include <assert.h>
+#include <math.h>
+#include <stdarg.h>
+#include <string.h>
+
 #include "toml.h"
 
 typedef struct TOMLParser {} *pTOMLParser;

@@ -16,7 +16,7 @@ src/toml-lemon.c: src/toml-lemon.lemon
 src/toml-re2c.c: src/toml-re2c.re2c
 	re2c --no-generation-date $< >$@
 
-toml-all.c: src/common.h src/toml-lemon.h src/toml-parser.h src/toml-re2c.c src/toml-lemon.c src/toml.c
+toml-all.c: src/toml-lemon.h src/toml-parser.h src/toml-re2c.c src/toml-lemon.c src/toml.c
 	cat $^ >$@
 
 rel/toml: rel toml-all.c main.c
